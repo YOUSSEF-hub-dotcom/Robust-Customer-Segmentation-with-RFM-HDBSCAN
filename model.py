@@ -97,6 +97,7 @@ def run_modeling(rfm, rfm_log, min_c, min_s, m_input):
             min_cluster_size=min_c,
             min_samples=min_s,
             metric=best_m,
+            prediction_data=True,
             gen_min_span_tree=True
         )
         rfm['Cluster'] = final_clusterer.fit_predict(rfm_scaled)
