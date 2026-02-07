@@ -1,0 +1,12 @@
+name: RFM_Customer_Segmentation
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      data_path: {type: string, default: "D:/ALL Projects/Segmentation/Online Retail.xlsx"}
+      min_c: {type: int, default: 100}
+      min_s: {type: int, default: 1}
+      m_input: {type: string, default: "euclidean"}
+    command: "python main.py --data_path {data_path} --min_c {min_c} --min_s {min_s} --m_input {m_input}"

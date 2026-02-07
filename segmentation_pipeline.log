@@ -1,0 +1,69 @@
+2026-02-01 22:05:13,949 - __main__ - INFO - 🚀 Starting RFM Segmentation Pipeline...
+2026-02-01 22:05:13,949 - __main__ - INFO - 📍 Configuration: min_c=100, min_s=1, metric=euclidean
+2026-02-01 22:05:13,949 - __main__ - INFO - 
+--- Phase 1: Data Processing ---
+2026-02-01 22:05:13,949 - data - INFO - Loading data from Excel...
+2026-02-01 22:05:49,161 - data - INFO - information about data:
+2026-02-01 22:05:49,302 - data - INFO - Statistical Operations:
+2026-02-01 22:05:49,433 - data - INFO - Columns of Data:
+2026-02-01 22:05:49,434 - data - INFO - number of rows & columns:
+2026-02-01 22:05:49,434 - data - INFO - Column types:
+2026-02-01 22:05:49,435 - data - INFO - =========== Data Cleaning ==========
+2026-02-01 22:05:50,245 - data - INFO - Number of Frequency Rows
+2026-02-01 22:05:51,278 - data - INFO - Missing Values
+2026-02-01 22:06:21,245 - data - INFO - Column Recency: 0 Outliers (0.00%)
+2026-02-01 22:06:21,245 - data - INFO - Column Frequency: 42 Outliers (0.97%)
+2026-02-01 22:06:21,245 - data - INFO - Column Monetary: 52 Outliers (1.20%)
+2026-02-01 22:06:32,578 - __main__ - INFO - 
+--- Phase 2: Exploratory Data Analysis ---
+2026-02-01 22:06:32,578 - eda - INFO - =========== EDA & Visualization ==========
+2026-02-01 22:06:32,578 - eda - INFO - 1. Correlation Matrix between RFM Features
+2026-02-01 22:06:34,772 - eda - INFO - 2. Top 10 Customers by Monetary Value
+2026-02-01 22:06:34,863 - matplotlib.category - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-02-01 22:06:34,866 - matplotlib.category - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-02-01 22:06:36,576 - eda - INFO - 3. Statistical Summary of Customer Recency
+2026-02-01 22:06:38,549 - eda - INFO - 4. Pairplot: Visualizing Natural Groups
+2026-02-01 22:06:42,119 - eda - INFO - --- 5. Most Purchased Products by Top Spenders
+2026-02-01 22:06:43,831 - eda - INFO - --- 6. Average RFM Metrics per Top Countries ---
+            Recency  Frequency   Monetary
+Country                                  
+EIRE       2.728264   3.647686  10.641146
+Singapore  3.970292   2.079442   9.965537
+Iceland    1.098612   2.079442   8.368925
+Australia  4.244317   1.765874   7.620403
+Norway     3.422493   1.352315   7.585432
+2026-02-01 22:06:45,724 - eda - INFO - --- 7. Monthly Activity Pattern ---
+2026-02-01 22:06:47,925 - eda - INFO - --- 8. Daily Sales Frequency ---
+2026-02-01 22:06:48,029 - matplotlib.category - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-02-01 22:06:48,052 - matplotlib.category - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2026-02-01 22:06:50,162 - __main__ - INFO - 
+--- Phase 3: Model Building & Optimization ---
+2026-02-01 22:06:50,162 - model - INFO - =========== Building A ML Model ==========
+2026-02-01 22:06:50,162 - model - INFO - Parameters: min_cluster_size=100, min_samples=1, metric =euclidean
+2026-02-01 22:06:50,164 - model - INFO - Scaling Operation Successful
+2026-02-01 22:06:50,175 - model - INFO - PCA Explained Variance: 0.9386528181989527
+2026-02-01 22:07:09,562 - model - INFO - 
+--- Metrics Comparison Table ---
+2026-02-01 22:07:09,564 - model - INFO -  Selected Best Metric: euclidean (DBCV: 0.039)
+2026-02-01 22:07:09,565 - model - INFO - Running HDBSCAN with metric: euclidean
+2026-02-01 22:07:09,697 - model - INFO - Clustering completed successfully.
+2026-02-01 22:07:09,709 - model - INFO -          Avg_Recency  Avg_Frequency  Avg_Monetary  Customer_Count
+Cluster                                                          
+-1         42.937662      16.098701  11972.014442             385
+ 5         23.103741       9.015306   3133.280102             588
+ 4         36.703125       5.000000   1761.810729             192
+ 3         51.861878       4.000000   1405.997268             362
+ 2         69.615854       3.000000   1024.875083             492
+ 1         93.902410       2.000000    664.142411             830
+ 0        156.679651       1.000000    357.890679            1489
+2026-02-01 22:07:15,994 - __main__ - INFO - 
+--- Phase 4: MLflow Tracking & Model Governance ---
+2026-02-01 22:07:15,994 - MLflow_LifeCycle - INFO - ========== MLflow LifeCycle =========
+2026-02-01 22:07:16,192 - MLflow_LifeCycle - INFO - {'input_metric': 'euclidean', 'selected_best_metric': 'euclidean', 'min_cluster_size': 100, 'min_samples': 1, 'cluster_selection_method': 'eom'}
+2026-02-01 22:07:16,287 - MLflow_LifeCycle - INFO - DBCV Score is successfully
+2026-02-01 22:07:25,194 - MLflow_LifeCycle - INFO - Model registered: name=RFM_Segmentation_Production, version=16
+2026-02-01 22:07:25,318 - MLflow_LifeCycle - INFO - Model v16 moved to Staging.
+2026-02-01 22:07:25,529 - MLflow_LifeCycle - INFO - Model v16 promoted to Production.
+2026-02-01 22:07:25,529 - __main__ - INFO - 
+✅ Pipeline Completed Successfully! Run ID: b72ed17a03d842c49f8edf54a72cec80
+2026-02-01 22:07:25,529 - __main__ - INFO - 🌍 Open MLflow UI (type 'mlflow ui' in terminal) to see the results.
