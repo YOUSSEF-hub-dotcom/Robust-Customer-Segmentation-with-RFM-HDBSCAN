@@ -9,11 +9,10 @@ import pandas as pd
 import numpy as np
 import joblib
 import mlflow.pyfunc
-
 import logging
 
-logger = logging.getLogger(__name__)
 
+logger = logging.getLogger(__name__)
 
 class RFMClusterWrapper(mlflow.pyfunc.PythonModel):
     def __init__(self, feature_columns, whale_threshold):
@@ -21,6 +20,7 @@ class RFMClusterWrapper(mlflow.pyfunc.PythonModel):
         self.whale_threshold = whale_threshold
 
     def load_context(self, context):
+        import joblib
         self.model = joblib.load(context.artifacts["model_path"])
         self.scaler = joblib.load(context.artifacts["scaler_path"])
 
@@ -36,28 +36,31 @@ class RFMClusterWrapper(mlflow.pyfunc.PythonModel):
         X_log = np.log1p(X)
         X_scaled = self.scaler.transform(X_log)
 
+        if not hasattr(self.model, 'prediction_data_') or self.model.prediction_data_ is None:
+            self.model.generate_prediction_data()
+
         labels, probs = hdbscan.approximate_predict(self.model, X_scaled)
 
-        if labels[0] == -1:
-            logger.warning(f"Outlier detected! High-value outlier check: Monetary={model_input['Monetary'].iloc[0]}")
-            soft_scores = hdbscan.membership_vector(self.model, X_scaled)
-            best_cluster = np.argmax(soft_scores, axis=1)
-            best_prob = np.max(soft_scores, axis=1)
+        final_labels = labels.copy()
+        final_probs = probs.copy()
 
-            final_label = best_cluster[0]
-            final_prob = best_prob[0]
-        else:
-            final_label = labels[0]
-            final_prob = probs[0]
+        noise_mask = (labels == -1)
+        if noise_mask.any():
+            soft_scores = hdbscan.membership_vector(self.model, X_scaled[noise_mask])
+            final_labels[noise_mask] = np.argmax(soft_scores, axis=1)
+            final_probs[noise_mask] = np.max(soft_scores, axis=1)
 
-        logger.info(f"Customer assigned to Cluster {final_label} with {final_prob:.2%} confidence.")
-
-        return pd.DataFrame({
-            "cluster_label": [int(final_label)],
-            "cluster_probability": [float(final_prob)],
-            "is_noise": [bool(labels[0] == -1)],
-            "is_whale": [bool((labels[0] == -1) & (model_input["Monetary"].iloc[0] >= self.whale_threshold))]
+        results = pd.DataFrame({
+            "cluster_label": final_labels.astype(int),
+            "cluster_probability": final_probs.astype(float),
+            "is_noise": noise_mask,
+            "is_whale": (noise_mask) & (model_input["Monetary"] >= self.whale_threshold)
         })
+
+        logger.info(f"✅ Segmented {len(results)} customers successfully.")
+
+        return results.replace([np.inf, -np.inf, np.nan], 0)
+
 
 def run_mlflow_lifecycle(rfm, rfm_scaled, rfm_melted, scaler, final_model, min_c, min_s, best_m, m_input):
     logger.info("========== MLflow LifeCycle =========")
@@ -192,3 +195,4 @@ def run_mlflow_lifecycle(rfm, rfm_scaled, rfm_melted, scaler, final_model, min_c
             f"{'Too much Noise' if noise_pct >= 20 else ''}")
 
     return run_id
+
