@@ -51,7 +51,7 @@ def get_processed_data():
     logger.info("Missing Values")
     print(df.isnull().sum())
 
-    # we found miss value in CustomerID : 132186 from 5429090
+    # we found miss value in CustomerID : 132186 from 541909
     df.dropna(subset=['CustomerID'], inplace=True)
     print(df['CustomerID'].isnull().sum())
     # CustomerID is Identifier Feature not numeric
